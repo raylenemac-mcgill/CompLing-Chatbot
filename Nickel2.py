@@ -1,34 +1,16 @@
-from nltk import pos_tag
 from nltk.corpus import cmudict
-from nltk.corpus import wordnet as wn
 import csv
 from PyDictionary import PyDictionary
 dictionary=PyDictionary()
 import random
-
-def find_semantic_similarity2(word1, word2, lch_threshold):
-    results = []
-    for net1 in wn.synsets(word1):
-        for net2 in wn.synsets(word2):
-            try:
-                lch = net1.lch_similarity(net2)
-                if lch >= lch_threshold:
-                    results.append(lch)
-            except:
-                continue
-    if results:
-        return max(results)
-    return 0
-
+subtlex = csv.reader(open("subtlexcsv.csv"), delimiter=',')
 cmu = cmudict.dict()
-def findincmu(word):
-    if word in cmu.keys():
-        return cmu[word]
 
-def levenshtein(s1, s2):
+# *** this function is not our original code; it comes from a class assignment ***
+def levenshtein(s1, s2): #find phonetic distance between suggested word and words in cmudict
     if len(s1) < len(s2):
-        return levenshtein(s2, s1)
-    if len(s2) == 0:
+        return levenshtein(s2, s1) #this is the levenshtein function from an assignment we did in class
+    if len(s2) == 0: #however, it computes the distance between phonetic transcriptions, not spellings.
         return len(s1)
     previous_row = range(len(s2) + 1)
     for i, c1 in enumerate(s1):
@@ -42,96 +24,63 @@ def levenshtein(s1, s2):
         previous_row = current_row
     return previous_row[-1]
 
-def find_closest(word, pos_list):
-    b = cmu[word]
-    for k in cmu.keys():
-        a = cmu[k]
-        for l1 in a:
-            for l2 in b:
-                if levenshtein(l1, l2) <= 1:
-                    print(k)
-                    (word, tag) = pos_tag([k])[0]
-                    print(tag)
-                    if tag in pos_list:
-                        return k
-    return None
 
-def find_match(word):
-    if word not in cmu.keys():
-        return None
-    (w, tag) = pos_tag([word])[0]
-    print(tag)
-    adj = ["JJ", "JJR", "JJS"]
-    noun = ["NN", "NNS"]
-    if tag in noun:
-        pos_list = adj
-    elif tag in adj:
-        pos_list = noun
-    else: return None
-    match = find_closest(word, pos_list)
-    print(match)
-
-#find_match("bizarre")
-#print(findincmu("bazaar"))
-#print(findincmu("bizarre"))
-#print(pos_tag(["green"]))
-#print(find_closest("picture", ["NN", "NNS"]))
 pos_dict = dict()
-
-subtlex = csv.reader(open("subtlexcsv.csv"), delimiter=',')
-def getpos(word):
-    for row in subtlex:
-        if row[0] == word:
-            return row[9]
-    return None
-
 for row in subtlex:
-    pos_dict[row[0]] = row[9].lower()
+    if row[1] == "FREQcount":  #prevents error of trying to convert table header to an integer
+        continue
+    elif int(row[1])>20:
+        pos_dict[row[0]]=row[9].lower() #creates a dictionary of acceptable words (frequency of 20+) and their POS
+
 
 def findamatch(word):
-    if word not in cmu.keys():
+    if word not in cmu.keys(): #in case the word does not exist in the dictionary
         return None
-    if "noun" == pos_dict[word]:
-        desired_pos = "adjective"
+    if "noun" == pos_dict[word]: #if the word is a noun,
+        desired_pos = "adjective" #then we want to pair it with an adjective to make a "phrase"
     elif "adjective" == pos_dict[word]:
         desired_pos = "noun"
     else:
         return None
-    return findclosest2(word, desired_pos)
+    return findclosest(word, desired_pos) #gets a word in CMUDict which is close phonetically
 
-def findclosest2(word, desired_pos):
-    b = cmu[word]
-    for k in cmu.keys():
-        a = cmu[k]
-        for l1 in a:
+def findclosest(word, desired_pos):  #find a word in cmudict that is phonetically similar to the suggested word
+    b = cmu[word] #get phonetic transcription of input word
+    for k in cmu.keys(): #loop through all words in CMUDict
+        a = cmu[k] #get phonetic transcription of current key
+        for l1 in a: #for each transcription for the first word (CMUDict gives a list of them)
             for l2 in b:
-                if levenshtein(l1, l2) <= 1:
-                    if k in pos_dict.keys():
-                        if pos_dict[k] == desired_pos:
-                            return k
+                if levenshtein(l1, l2) <= 1: #if the lev. dist. is small enough
+                    if k in pos_dict.keys(): #check if word has a subtlex FREQcount of 20+
+                        if pos_dict[k] == desired_pos:  #ensure word is an adjective if suggestion was a noun, and vice versa
+                            return k #return the FIRST word in CMUDict which is one phoneme away from the input word
     return None
 
-def syn(word):
- #   good_syns = []
- #   for w in dictionary.synonym(word):
- #       if find_semantic_similarity2(word, w, 0) > 0:
-  #          good_syns.append(w)
-    return random.choice(dictionary.synonym(word))
+
+def syn(word): #returns a synonym for a word
+    good_syns = []
+    for w in dictionary.synonym(word):  #generates a list of synonyms for a word, taken from dictionary.com
+        for key in pos_dict.keys():
+            if w == key and pos_dict[w] == pos_dict[word]: #filters synonyms to match POS of word, have a subtlex FREQcount of 20+
+                good_syns.append(w)
+    return random.choice(good_syns)
+    #returns a random synonym from a list of acceptable synonyms
 
 def joke(word):
     try:
-        homophone = findamatch(word) #finds a homophone for the original word
+        homophone = findamatch(word) #finds a homophone (differs by at most one phoneme) for the original word
         hsyn = syn(homophone) #finds a synonym for the homophone
         osyn=syn(word) #finds a synonym for the original word
         str = "What do you call a"
         str2 = "? A"
         vowels = "aeiou"
-        if "noun" == pos_dict[word]:
-            if hsyn[0] in vowels:
+        if "noun" == pos_dict[word]: #if the input word is a noun, make a joke with the right template
+            if hsyn[0] in vowels: #avoid returning a joke with 'a' + vowel
                 str += "n"
-            if homophone[0] in vowels:
+            if homophone[0] in vowels: #if first letter is a vowel
                 str2 += "n"
             return  str + " " + hsyn + " " + osyn + str2 + " " + homophone+" "+word+"!"
+            #joke template
         elif "adjective" == pos_dict[word]:
             if osyn[0] in vowels:
                 str += "n"
@@ -144,18 +93,10 @@ def joke(word):
         return None
 
 
-def get_joke(words):
-    for w in words:
+def get_joke(words):  #make a joke with the first acceptable word in input
+    for w in words: #loops through the words in the input and tries to find a joke for each
         j = joke(w)
         if j:
             return j
     return None
-
-
-#def main():
- #   print(joke("table"))
-
-#if __name__ == "__main__":
- #   main()
-#What if we went to the Trottier Helpdesk to figure out how to get rid of the warning?
 

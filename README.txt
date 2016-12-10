@@ -9,12 +9,16 @@ Penny is a chatbot created for our final project for LING 550 (Computational Lin
 Currently Penny only provides a command-line interface. In the future we might develop a GUI.
 
 DEPENDENCIES
-To get Penny installed and running, you will need to install Python 3, NLTK and Pydictionary.
+To get Penny installed and running, you will need to install Python 3, NLTK and PyDictionary.
 Install Python 3: http://www.python.org/downloads/
 pip install PyDictionary
 pip install -U nltk (make sure CMUDict is included in your installation)
 
 
-To supress the BeautifulSoup warning, follow the path specified in the warning
+How to suppress the BeautifulSoup4 warning:
+Run Penny2.py. Enter the word “clean”.
+When a warning appears, it should include a link to the python file (__init__.py) that must be edited in order to remove the warning. Click this link. If this link does not appear, it can also be found in Library/Frameworks/Python.framework/Versions/3.5/bin/python3.5/site-packages/bs4 (on a Mac computer running Python 3).
 (on Windows: \AppData\Local\Programs\Python\Python35-32\lib\site-packages\bs4\__init__.py:181 )
-and comment out the warning. We are currently searching for a better solution to this problem.
+Go to the line “warnings.warn(self.NO_PARSER_SPECIFIED_WARNING % dict(“, which should be line 177. Comment out that line and the next four (until “markup_type=markup_type))”).
+
+We are currently searching for a better solution to this problem.

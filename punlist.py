@@ -14,7 +14,7 @@ notrandompuns = ["Stop bugging me with these boring suggestions.", "I was bready
                  "This is a silly suggestion. Quit horsing around.",
                  "This is a silly suggestion. Quit foaling around.", "This suggestion is toadally cool, bro.",
                  "What a boaring suggestion. You could do better.", "The fact that WordNet thinks 'bull' has more semantic similarity to 'pig' than it has to 'cow' "
-                    "is a load of bull."]
+                    "is a load of bull.", "Give me a better suggestion. I couldn't give any fox about this one.", "You cheddar not suggest a cheese pun again."]
 
 pundict = {"cow": cow_jokes,
            "cattle": cow_jokes,
@@ -35,8 +35,7 @@ pundict = {"cow": cow_jokes,
                    "If otters had their own country what would be their capital city? Otterwa."],
            "linguistics": ling_jokes,
            "linguist": ling_jokes,
-           "wug": ["Wugs not drugs.",
-                 "What is a linguist's favourite dog breed? A wug.",
+           "wug": ["What is a linguist's favourite dog breed? A wug.",
                  "I didn't choose the wug life, the wug life chose me.",
                  "What do you call a linguist who needs plastic surgery? Wugly."],
            "snake": snake_jokes,
@@ -55,8 +54,8 @@ pundict = {"cow": cow_jokes,
                       "What do you call a cheesy retelling of Cinderella? Mozzarella.",
                       "What do you call a cheesy pun but in French? Camembour.",
                       "You cheddar not suggest a cheese pun again."],
-           "train":["How do conductors learn to do their job? They train."],
-           "grass":["How can you thank your Spanish-speaking gardener? Grassias!"],
+           "train": ["How do conductors learn to do their job? They train."],
+           "grass": ["How can you thank your Spanish-speaking gardener? Grassias!"],
            "lemon": ["What does a lemon call when it's in a tight squeeze? Lemon-Aid."],
            "bread": ["I was bready to tell you a funny joke but then I forgot it."],
            "floor": ["I was bewildered when I walked into my apartment to discover someone stole my carpet. You could "
