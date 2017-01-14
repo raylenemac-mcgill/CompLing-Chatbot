@@ -61,5 +61,6 @@ pundict = {"cow": cow_jokes,
            "floor": ["I was bewildered when I walked into my apartment to discover someone stole my carpet. You could "
                      "say I was floored."],
            "box": ["What did the garbage can say to the blue box the day after garbage collection? Where have you bin?"],
-           "planet": ["Why are aliens so good at carrying out an invasion? They planet."]}
+           "planet": ["Why are aliens so good at carrying out an invasion? They planet."],
+           "business": ["What do you say to a stressed-out undergraduate business student? B.Com"]}
 
